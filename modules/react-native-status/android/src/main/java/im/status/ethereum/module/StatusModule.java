@@ -10,6 +10,7 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
 
 import com.facebook.react.bridge.*;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.status_im.status_go.cmd.Statusgo;
 
@@ -18,6 +19,9 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
@@ -111,7 +115,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.e(TAG, "error making folder: " + dataFolder, e);
         }
 
-        Statusgo.StartNode(Statusgo.GenerateConfig(dataFolder, 3));
+        String config;
+        String defaultConfig = Statusgo.GenerateConfig(dataFolder, 3);
+        try {
+            JSONObject jsonConfig = new JSONObject(defaultConfig);
+            jsonConfig.put("LogEnabled", true);
+            jsonConfig.put("LogFile", "geth.log");
+            jsonConfig.put("LogLevel", "DEBUG");
+
+            config = jsonConfig.toString();
+        } catch (JSONException e) {
+            Log.d(TAG, "Something went wrong " + e.getMessage());
+            Log.d(TAG, "Default configuration will be used");
+
+            config = defaultConfig;
+        }
+
+        Statusgo.StartNode(config);
         Log.d(TAG, "Geth node started");
     }
 
