@@ -794,7 +794,8 @@ function sendTransaction(params, context) {
     var data = {
         from: context.from,
         to: context.to,
-        value: web3.toWei(params.amount.replace(",", "."), "ether")
+        value: web3.toWei(params.amount.replace(",", "."), "ether"),
+        gasPrice: web.eth.gasPrice
     };
 
     try {
