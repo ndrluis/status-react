@@ -1875,8 +1875,20 @@ status.response({
         type: status.types.PASSWORD,
         placeholder: I18n.t('password_placeholder'),
         hidden: true
+    }, {
+        name: "password_confirmation",
+        type: status.types.PASSWORD,
+        placeholder: I18n.t('password_placeholder2'),
+        hidden: true
     }],
     validator: function (params, context) {
+        if (params["password-confirmation"] != params["password"]) {
+            var error = status.components.validationMessage(
+                I18n.t('password_validation_title'),
+                I18n.t('password_error1')
+            );
+            return {markup: error};
+        }
         if (params.password.length < 6) {
             var error = status.components.validationMessage(
                 I18n.t('password_validation_title'),
