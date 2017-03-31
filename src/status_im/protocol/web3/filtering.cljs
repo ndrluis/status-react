@@ -15,13 +15,26 @@
     (swap! filters update web3 dissoc options)))
 
 (defn add-filter!
-  [web3 options callback]
+  [web3 {:keys [topics to] :as options} callback]
   (remove-filter! web3 options)
   (debug :add-filter options)
-  (let [filter (.filter (u/shh web3)
-                        (clj->js options)
-                        callback)]
-    (swap! filters assoc-in [web3 options] filter)))
+  (let [shh (u/shh web3)
+        encrypted? (boolean to)
+        do-add-filter (fn []
+                        (let [filter (.filter shh (clj->js options) callback)]
+                          (swap! filters assoc-in [web3 options] filter)))]
+    (if encrypted?
+      (do-add-filter)
+      (let [topic (first topics)]
+        (.hasSymKey
+          shh topic
+          (fn [error res]
+            (if-not res
+              (.addSymKey
+                shh topic (.toHex web3 "status-key-name")
+                (fn [error res]
+                  (when-not error (do-add-filter))))
+              (do-add-filter))))))))
 
 (defn remove-all-filters! []
   (doseq [[web3 filters] @filters]

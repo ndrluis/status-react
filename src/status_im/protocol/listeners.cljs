@@ -9,7 +9,9 @@
 (defn- parse-payload [payload]
   (debug :parse-payload)
   (try
-    {:payload (r/read-string (u/to-utf8 payload))}
+    (let [read (comp r/read-string u/to-utf8 u/to-utf8)]
+      {:payload (read payload
+                      )})
     (catch :default err
       (debug :parse-payload-error err)
       {:error err})))
@@ -36,7 +38,7 @@
     (when error
       (debug :listener-error error))
     (when-not error
-      (debug :message-received)
+      (debug :message-received (js->clj js-message))
       (let [{:keys [from payload to] :as message}
             (js->clj js-message :keywordize-keys true)
 

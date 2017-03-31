@@ -7,8 +7,11 @@
 (defn from-utf8 [s]
   (.fromUtf8 web3.prototype s))
 
+(defn to-ascii [s]
+  (.toAscii web3.prototype s))
+
 (defn to-utf8 [s]
-  (.toUtf8 web3.prototype s))
+  (.toUtf8 web3.prototype (str s)))
 
 (defn shh [web3]
   (.-shh web3))
