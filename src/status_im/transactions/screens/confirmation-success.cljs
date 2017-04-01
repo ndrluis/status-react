@@ -8,7 +8,7 @@
             [status-im.i18n :as i18n]))
 
 (defn confirmation-success [quantity]
-  [rn/view st/success-screen
+  [rn/view {:style st/success-screen}
    [status-bar/status-bar {:type :transparent}]
    [rn/view {:style st/success-screen-content-container}
     [rn/view {:style st/success-icon-container}
